@@ -6,50 +6,98 @@
   <title>Street Football 26</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+  <!-- MENÚ PRINCIPAL -->
   <div id="menu">
-    <div class="logo">STREET <span>FOOTBALL</span></div>
+
+    <div class="logo">
+      STREET
+      <span>FOOTBALL</span>
+    </div>
+
     <div class="edition">26</div>
 
-    <button id="playBtn">⚽ JUGAR</button>
-    <button class="menuBtn">🏆 TORNEO</button>
-    <button class="menuBtn">👤 MI JUGADOR</button>
+    <button id="playBtn" class="mainButton">
+      ⚽ JUGAR
+    </button>
 
-    <p class="copyright">STREET FOOTBALL 26 · FAN PROJECT ORIGINAL</p>
+    <button id="tournamentBtn" class="menuButton">
+      🏆 TORNEO
+    </button>
+
+    <button id="playerBtn" class="menuButton">
+      👤 MI JUGADOR
+    </button>
+
+    <p class="copyright">
+      STREET FOOTBALL 26
+    </p>
+
   </div>
 
+
+  <!-- JUEGO -->
   <div id="game" class="hidden">
 
+    <!-- MARCADOR -->
     <div id="score">
-      <div>
+
+      <div class="team">
         <small>LOCAL</small>
         <b id="homeScore">0</b>
       </div>
 
-      <div id="timer">03:00</div>
+      <div id="timer">
+        03:00
+      </div>
 
-      <div>
+      <div class="team">
         <small>VISITANTE</small>
         <b id="awayScore">0</b>
       </div>
+
     </div>
 
+
+    <!-- CAMPO -->
     <canvas id="field"></canvas>
 
+
+    <!-- JOYSTICK -->
     <div id="joystick">
       <div id="stick"></div>
     </div>
 
+
+    <!-- BOTONES -->
     <div id="buttons">
-      <button id="pass">PASE</button>
-      <button id="shoot">TIRAR</button>
-      <button id="sprint">⚡</button>
+
+      <button id="pass">
+        PASE
+      </button>
+
+      <button id="shoot">
+        TIRAR
+      </button>
+
+      <button id="sprint">
+        ⚡
+      </button>
+
     </div>
 
-    <button id="back">✕</button>
+
+    <!-- VOLVER -->
+    <button id="back">
+      ✕
+    </button>
+
   </div>
 
+
   <script src="script.js"></script>
+
 </body>
 </html>
