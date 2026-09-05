@@ -1,32 +1,339 @@
-const canvas = document.getElementById("field");
-const ctx = canvas.getContext("2d");
+const $ = id => document.getElementById(id);
 
-const menu = document.getElementById("menu");
-const game = document.getElementById("game");
+/* =========================
+   PANTALLAS
+========================= */
 
-const playBtn = document.getElementById("playBtn");
-const tournamentBtn = document.getElementById("tournamentBtn");
-const playerBtn = document.getElementById("playerBtn");
-const backBtn = document.getElementById("back");
+const updateScreen = $("updateScreen");
+const continueUpdate = $("continueUpdate");
+const loginScreen = $("loginScreen");
+const menu = $("menu");
+const game = $("game");
+const modal = $("modal");
 
-const homeScore = document.getElementById("homeScore");
-const awayScore = document.getElementById("awayScore");
-const timerText = document.getElementById("timer");
-
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
-
-const passBtn = document.getElementById("pass");
-const shootBtn = document.getElementById("shoot");
-const sprintBtn = document.getElementById("sprint");
+let playerName = localStorage.getItem("sf26_player");
+let tokens = Number(localStorage.getItem("sf26_tokens")) || 1000;
+let level = Number(localStorage.getItem("sf26_level")) || 1;
 
 
 /* =========================
-   VARIABLES
+   ACTUALIZACIÓN 2.0V
 ========================= */
 
-let W = 0;
-let H = 0;
+continueUpdate.addEventListener("click", () => {
+
+  updateScreen.classList.add("hidden");
+
+  if (playerName) {
+    showMenu();
+  } else {
+    loginScreen.classList.remove("hidden");
+  }
+
+});
+
+
+/* =========================
+   REGISTRO
+========================= */
+
+$("loginBtn").addEventListener("click", createPlayer);
+
+$("playerName").addEventListener("keydown", e => {
+  if (e.key === "Enter") createPlayer();
+});
+
+
+function createPlayer() {
+
+  const input = $("playerName");
+  const name = input.value.trim();
+
+  if (name.length < 3) {
+
+    $("loginError").textContent =
+      "⚠️ El nombre debe tener al menos 3 caracteres.";
+
+    return;
+  }
+
+  playerName = name;
+
+  localStorage.setItem(
+    "sf26_player",
+    playerName
+  );
+
+  localStorage.setItem(
+    "sf26_tokens",
+    tokens
+  );
+
+  loginScreen.classList.add("hidden");
+
+  showMenu();
+}
+
+
+/* =========================
+   MENÚ
+========================= */
+
+function showMenu() {
+
+  menu.classList.remove("hidden");
+
+  $("menuPlayerName").textContent =
+    playerName;
+
+  $("playerLevel").textContent =
+    level;
+
+  $("tokenAmount").textContent =
+    tokens.toLocaleString("es-ES");
+
+}
+
+
+/* =========================
+   MODALES
+========================= */
+
+function openModal(title, content) {
+
+  $("modalTitle").textContent = title;
+
+  $("modalContent").innerHTML = content;
+
+  modal.classList.remove("hidden");
+
+}
+
+
+$("closeModal").addEventListener(
+  "click",
+  () => modal.classList.add("hidden")
+);
+
+
+/* =========================
+   BOTONES DEL MENÚ
+========================= */
+
+$("oneVsOneBtn").addEventListener(
+  "click",
+  () => startMatch("1 VS 1")
+);
+
+
+$("fiveVsFiveBtn").addEventListener(
+  "click",
+  () => startMatch("5 VS 5")
+);
+
+
+$("elevenBtn").addEventListener(
+  "click",
+  () => startMatch("11 VS 11")
+);
+
+
+$("playBtn").addEventListener(
+  "click",
+  () => startMatch("PARTIDO")
+);
+
+
+/* =========================
+   TORNEOS
+========================= */
+
+$("tournamentBtn").addEventListener(
+  "click",
+  () => {
+
+    openModal(
+      "🏆 TORNEOS",
+      `
+        <p>Compite por grandes premios.</p>
+
+        <div class="tournamentPrize">
+          🪙 100.000 TOKENS
+        </div>
+
+        <button class="modalAction" onclick="startMatch('TORNEO')">
+          🏆 JUGAR TORNEO
+        </button>
+      `
+    );
+
+  }
+);
+
+
+/* =========================
+   MI JUGADOR
+========================= */
+
+$("playerBtn").addEventListener(
+  "click",
+  () => {
+
+    openModal(
+      "👤 MI JUGADOR",
+      `
+        <div class="bigAvatar">🧍</div>
+
+        <h3>${playerName}</h3>
+
+        <p>Nivel: ${level}</p>
+
+        <p>🪙 ${tokens.toLocaleString("es-ES")} tokens</p>
+
+        <button class="modalAction" onclick="addTokens(500)">
+          💰 RECOMPENSA DIARIA
+        </button>
+      `
+    );
+
+  }
+);
+
+
+/* =========================
+   TIENDA
+========================= */
+
+$("shopBtn").addEventListener(
+  "click",
+  () => {
+
+    openModal(
+      "🛒 TIENDA",
+      `
+        <div class="shopItem">
+          <h3>⚡ JUGADOR RÁPIDO</h3>
+          <p>Velocidad +10</p>
+          <b>🪙 5.000</b>
+          <button class="modalAction"
+            onclick="buyPlayer(5000)">
+            COMPRAR
+          </button>
+        </div>
+
+        <div class="shopItem">
+          <h3>🔥 JUGADOR ÉLITE</h3>
+          <p>Velocidad +20</p>
+          <b>🪙 25.000</b>
+          <button class="modalAction"
+            onclick="buyPlayer(25000)">
+            COMPRAR
+          </button>
+        </div>
+
+        <div class="shopItem">
+          <h3>👑 LEYENDA</h3>
+          <p>Jugador legendario</p>
+          <b>🪙 100.000</b>
+          <button class="modalAction"
+            onclick="buyPlayer(100000)">
+            COMPRAR
+          </button>
+        </div>
+      `
+    );
+
+  }
+);
+
+
+/* =========================
+   CLASIFICACIÓN
+========================= */
+
+$("rankingBtn").addEventListener(
+  "click",
+  () => {
+
+    openModal(
+      "📊 CLASIFICACIÓN",
+      `
+        <div class="ranking">
+          <p>🥇 JugadorPro — 🪙 985.000</p>
+          <p>🥈 Crack26 — 🪙 750.000</p>
+          <p>🥉 FútbolKing — 🪙 500.000</p>
+          <hr>
+          <p>⭐ ${playerName} — 🪙 ${tokens.toLocaleString("es-ES")}</p>
+        </div>
+      `
+    );
+
+  }
+);
+
+
+/* =========================
+   TOKENS
+========================= */
+
+function addTokens(amount) {
+
+  tokens += amount;
+
+  localStorage.setItem(
+    "sf26_tokens",
+    tokens
+  );
+
+  $("tokenAmount").textContent =
+    tokens.toLocaleString("es-ES");
+
+  alert(
+    `💰 +${amount.toLocaleString("es-ES")} tokens`
+  );
+
+}
+
+
+/* =========================
+   COMPRAR JUGADOR
+========================= */
+
+function buyPlayer(price) {
+
+  if (tokens < price) {
+
+    alert("❌ No tienes suficientes tokens.");
+
+    return;
+  }
+
+  tokens -= price;
+
+  localStorage.setItem(
+    "sf26_tokens",
+    tokens
+  );
+
+  $("tokenAmount").textContent =
+    tokens.toLocaleString("es-ES");
+
+  alert(
+    "✅ ¡Jugador comprado!"
+  );
+
+}
+
+
+/* =========================
+   JUEGO
+========================= */
+
+const canvas = $("field");
+const ctx = canvas.getContext("2d");
+
+let W;
+let H;
 
 let running = false;
 
@@ -37,25 +344,16 @@ let timeLeft = 180;
 
 let joyX = 0;
 let joyY = 0;
-
 let sprinting = false;
 
-
-/* =========================
-   JUGADOR
-========================= */
 
 const player = {
   x: 0,
   y: 0,
   r: 18,
-  speed: 3.8
+  speed: 4
 };
 
-
-/* =========================
-   BALÓN
-========================= */
 
 const ball = {
   x: 0,
@@ -66,98 +364,22 @@ const ball = {
 };
 
 
-/* =========================
-   RIVALES
-========================= */
-
 const enemies = [
-
-  {
-    x: 0,
-    y: 0,
-    r: 17,
-    speed: 1.5
-  },
-
-  {
-    x: 0,
-    y: 0,
-    r: 17,
-    speed: 1.7
-  },
-
-  {
-    x: 0,
-    y: 0,
-    r: 17,
-    speed: 1.4
-  }
-
+  {x:0,y:0,r:17,speed:1.5},
+  {x:0,y:0,r:17,speed:1.7},
+  {x:0,y:0,r:17,speed:1.4},
+  {x:0,y:0,r:17,speed:1.3},
+  {x:0,y:0,r:17,speed:1.6}
 ];
 
 
 /* =========================
-   REDIMENSIONAR
+   PARTIDO
 ========================= */
 
-function resize() {
+function startMatch(mode) {
 
-  W = window.innerWidth;
-  H = window.innerHeight;
-
-  canvas.width = W;
-  canvas.height = H;
-
-  resetPositions();
-}
-
-
-/* =========================
-   POSICIONES INICIALES
-========================= */
-
-function resetPositions() {
-
-  player.x = W * 0.25;
-  player.y = H * 0.5;
-
-  ball.x = player.x + 25;
-  ball.y = player.y;
-
-  ball.vx = 0;
-  ball.vy = 0;
-
-
-  enemies[0].x = W * 0.65;
-  enemies[0].y = H * 0.35;
-
-  enemies[1].x = W * 0.72;
-  enemies[1].y = H * 0.65;
-
-  enemies[2].x = W * 0.55;
-  enemies[2].y = H * 0.5;
-}
-
-
-/* =========================
-   DISTANCIA
-========================= */
-
-function distance(a, b) {
-
-  return Math.hypot(
-    a.x - b.x,
-    a.y - b.y
-  );
-
-}
-
-
-/* =========================
-   INICIAR PARTIDO
-========================= */
-
-function startGame() {
+  modal.classList.add("hidden");
 
   menu.classList.add("hidden");
 
@@ -168,73 +390,76 @@ function startGame() {
 
   timeLeft = 180;
 
-  homeScore.textContent = "0";
-  awayScore.textContent = "0";
+  $("homeScore").textContent = "0";
+  $("awayScore").textContent = "0";
 
-  timerText.textContent = "03:00";
+  $("timer").textContent = "03:00";
 
   resize();
 
   running = true;
 
   requestAnimationFrame(loop);
+
 }
 
 
 /* =========================
-   BOTÓN JUGAR
+   POSICIONES
 ========================= */
 
-playBtn.addEventListener("click", function () {
+function resetPositions() {
 
-  startGame();
+  player.x = W * .25;
+  player.y = H * .5;
 
-});
+  ball.x = player.x + 25;
+  ball.y = player.y;
+
+  ball.vx = 0;
+  ball.vy = 0;
+
+  enemies.forEach((enemy, i) => {
+
+    enemy.x = W * (.55 + i * .06);
+
+    enemy.y =
+      H * (.25 + (i % 4) * .18);
+
+  });
+
+}
 
 
 /* =========================
-   TORNEO
+   RESIZE
 ========================= */
 
-tournamentBtn.addEventListener("click", function () {
+function resize() {
 
-  alert(
-    "🏆 TORNEO\n\n" +
-    "Modo torneo próximamente."
+  W = canvas.width =
+    window.innerWidth;
+
+  H = canvas.height =
+    window.innerHeight;
+
+  resetPositions();
+
+}
+
+
+/* =========================
+   DISTANCIA
+========================= */
+
+function distance(a,b) {
+
+  return Math.hypot(
+    a.x-b.x,
+    a.y-b.y
   );
 
-});
-
-
-/* =========================
-   MI JUGADOR
-========================= */
-
-playerBtn.addEventListener("click", function () {
-
-  alert(
-    "👤 MI JUGADOR\n\n" +
-    "Crea y mejora tu jugador próximamente."
-  );
-
-});
-
-
-/* =========================
-   VOLVER AL MENÚ
-========================= */
-
-backBtn.addEventListener("click", function () {
-
-  running = false;
-
-  game.classList.add("hidden");
-
-  menu.classList.remove("hidden");
-
-  resetJoystick();
-
-});
+}
 
 
 /* =========================
@@ -243,48 +468,85 @@ backBtn.addEventListener("click", function () {
 
 function updatePlayer() {
 
-  const speed = sprinting
-    ? 6
-    : player.speed;
-
+  const speed =
+    sprinting ? 6 : player.speed;
 
   player.x += joyX * speed;
   player.y += joyY * speed;
 
+  player.x =
+    Math.max(
+      30,
+      Math.min(W-30,player.x)
+    );
 
-  player.x = Math.max(
-    35,
-    Math.min(
-      W - 35,
-      player.x
-    )
-  );
+  player.y =
+    Math.max(
+      90,
+      Math.min(H-30,player.y)
+    );
 
-
-  player.y = Math.max(
-    90,
-    Math.min(
-      H - 35,
-      player.y
-    )
-  );
-
-
-  /* CONTROL DEL BALÓN */
 
   if (
-    distance(player, ball)
-    <
-    player.r + ball.r + 10
+    distance(player,ball)
+    < 45
   ) {
 
     ball.x +=
-      (player.x - ball.x) * 0.25;
+      (player.x-ball.x)*.25;
 
     ball.y +=
-      (player.y - ball.y) * 0.25;
+      (player.y-ball.y)*.25;
 
   }
+
+}
+
+
+/* =========================
+   BOTS
+========================= */
+
+function updateEnemies() {
+
+  enemies.forEach(enemy => {
+
+    const dx =
+      player.x-enemy.x;
+
+    const dy =
+      player.y-enemy.y;
+
+    const d =
+      Math.hypot(dx,dy);
+
+
+    if(d>1) {
+
+      enemy.x +=
+        dx/d*enemy.speed;
+
+      enemy.y +=
+        dy/d*enemy.speed;
+
+    }
+
+
+    /* ROBO */
+
+    if (
+      distance(enemy,ball)
+      < 35
+    ) {
+
+      ball.vx = -4;
+
+      ball.vy =
+        (Math.random()-.5)*6;
+
+    }
+
+  });
 
 }
 
@@ -298,69 +560,19 @@ function updateBall() {
   ball.x += ball.vx;
   ball.y += ball.vy;
 
+  ball.vx *= .96;
+  ball.vy *= .96;
 
-  ball.vx *= 0.96;
-  ball.vy *= 0.96;
-
-
-  if (
-    ball.y < 90 ||
-    ball.y > H - 20
+  if(
+    ball.y<90 ||
+    ball.y>H-25
   ) {
 
-    ball.vy *= -0.8;
+    ball.vy *= -.8;
 
   }
 
-
   checkGoal();
-
-}
-
-
-/* =========================
-   RIVALES
-========================= */
-
-function updateEnemies() {
-
-  enemies.forEach(enemy => {
-
-    const dx =
-      player.x - enemy.x;
-
-    const dy =
-      player.y - enemy.y;
-
-    const d =
-      Math.hypot(dx, dy);
-
-
-    if (d > 1) {
-
-      enemy.x +=
-        dx / d * enemy.speed;
-
-      enemy.y +=
-        dy / d * enemy.speed;
-
-    }
-
-
-    if (
-      distance(enemy, player)
-      <
-      enemy.r + player.r
-    ) {
-
-      ball.vx = -3;
-
-      ball.vy =
-        (Math.random() - 0.5) * 4;
-
-    }
-
-  });
 
 }
 
@@ -371,62 +583,54 @@ function updateEnemies() {
 
 function checkGoal() {
 
-  const goalTop = H * 0.42;
-  const goalBottom = H * 0.58;
+  const top = H*.4;
+  const bottom = H*.6;
 
 
-  /* GOL VISITANTE */
-
-  if (
-    ball.x < 15 &&
-    ball.y > goalTop &&
-    ball.y < goalBottom
+  if(
+    ball.x<15 &&
+    ball.y>top &&
+    ball.y<bottom
   ) {
 
     away++;
 
-    awayScore.textContent = away;
+    $("awayScore").textContent =
+      away;
 
     resetPositions();
 
   }
 
 
-  /* GOL LOCAL */
-
-  if (
-    ball.x > W - 15 &&
-    ball.y > goalTop &&
-    ball.y < goalBottom
+  if(
+    ball.x>W-15 &&
+    ball.y>top &&
+    ball.y<bottom
   ) {
 
     home++;
 
-    homeScore.textContent = home;
+    $("homeScore").textContent =
+      home;
 
     resetPositions();
 
   }
 
 
-  /* PARED IZQUIERDA */
+  if(ball.x<20) {
 
-  if (ball.x < 20) {
-
-    ball.x = 20;
-
-    ball.vx *= -1;
+    ball.x=20;
+    ball.vx*=-1;
 
   }
 
 
-  /* PARED DERECHA */
+  if(ball.x>W-20) {
 
-  if (ball.x > W - 20) {
-
-    ball.x = W - 20;
-
-    ball.vx *= -1;
+    ball.x=W-20;
+    ball.vx*=-1;
 
   }
 
@@ -439,221 +643,126 @@ function checkGoal() {
 
 function drawField() {
 
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-
-  /* CÉSPED */
-
-  ctx.fillStyle = "#08752e";
+  ctx.fillStyle="#08752e";
 
   ctx.fillRect(
-    0,
-    0,
-    W,
-    H
+    0,0,W,H
   );
 
 
-  /* FRANJAS */
+  ctx.strokeStyle="white";
+  ctx.lineWidth=3;
 
-  for (
-    let x = 0;
-    x < W;
-    x += 80
-  ) {
-
-    ctx.fillStyle =
-      x % 160 === 0
-      ? "rgba(255,255,255,.025)"
-      : "rgba(0,0,0,.025)";
-
-    ctx.fillRect(
-      x,
-      0,
-      80,
-      H
-    );
-
-  }
-
-
-  /* LÍNEAS */
-
-  ctx.strokeStyle =
-    "rgba(255,255,255,.85)";
-
-  ctx.lineWidth = 3;
-
-
-  /* BORDE */
 
   ctx.strokeRect(
-    15,
-    80,
-    W - 30,
-    H - 100
+    15,80,
+    W-30,
+    H-105
   );
 
-
-  /* CENTRO */
 
   ctx.beginPath();
 
   ctx.moveTo(
-    W / 2,
-    80
+    W/2,80
   );
 
   ctx.lineTo(
-    W / 2,
-    H - 20
+    W/2,H-25
   );
 
   ctx.stroke();
 
 
-  /* CÍRCULO CENTRAL */
-
   ctx.beginPath();
 
   ctx.arc(
-    W / 2,
-    H / 2,
-    75,
+    W/2,
+    H/2,
+    70,
     0,
-    Math.PI * 2
+    Math.PI*2
   );
 
   ctx.stroke();
 
-
-  /* PUNTO CENTRAL */
-
-  ctx.fillStyle = "white";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    W / 2,
-    H / 2,
-    4,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /* ÁREAS */
 
   ctx.strokeRect(
     15,
-    H * .32,
+    H*.32,
     130,
-    H * .36
+    H*.36
   );
 
 
   ctx.strokeRect(
-    W - 145,
-    H * .32,
+    W-145,
+    H*.32,
     130,
-    H * .36
+    H*.36
   );
 
 
   /* PORTERÍAS */
 
   ctx.strokeRect(
-    0,
-    H * .42,
-    18,
-    H * .16
+    0,H*.42,
+    18,H*.16
   );
 
-
   ctx.strokeRect(
-    W - 18,
-    H * .42,
-    18,
-    H * .16
+    W-18,H*.42,
+    18,H*.16
   );
 
 }
 
 
 /* =========================
-   JUGADOR
+   PERSONAJES
 ========================= */
 
-function drawPlayer() {
+function drawCharacter(x,y,r,body) {
 
-  /* SOMBRA */
-
-  ctx.fillStyle =
-    "rgba(0,0,0,.25)";
+  ctx.fillStyle="rgba(0,0,0,.25)";
 
   ctx.beginPath();
 
   ctx.ellipse(
-    player.x,
-    player.y + 16,
-    20,
-    8,
-    0,
-    0,
-    Math.PI * 2
+    x,y+15,
+    r+3,7,
+    0,0,Math.PI*2
   );
 
   ctx.fill();
 
 
-  /* CUERPO */
-
-  ctx.fillStyle = "#39ff88";
+  ctx.fillStyle=body;
 
   ctx.beginPath();
 
   ctx.arc(
-    player.x,
-    player.y,
-    player.r,
+    x,y,
+    r,
     0,
-    Math.PI * 2
+    Math.PI*2
   );
 
   ctx.fill();
-
-
-  /* CAMISETA */
-
-  ctx.fillStyle = "#10251a";
-
-  ctx.fillRect(
-    player.x - 10,
-    player.y - 5,
-    20,
-    15
-  );
 
 
   /* CABEZA */
 
-  ctx.fillStyle = "#d99a6c";
+  ctx.fillStyle="#d99a6c";
 
   ctx.beginPath();
 
   ctx.arc(
-    player.x,
-    player.y - 16,
+    x,
+    y-r,
     9,
     0,
-    Math.PI * 2
+    Math.PI*2
   );
 
   ctx.fill();
@@ -662,90 +771,31 @@ function drawPlayer() {
 
 
 /* =========================
-   RIVALES
+   DIBUJAR
 ========================= */
 
-function drawEnemies() {
+function draw() {
 
-  enemies.forEach(enemy => {
+  drawField();
 
-    /* SOMBRA */
+  enemies.forEach(e =>
+    drawCharacter(
+      e.x,
+      e.y,
+      e.r,
+      "#e33"
+    )
+  );
 
-    ctx.fillStyle =
-      "rgba(0,0,0,.25)";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-      enemy.x,
-      enemy.y + 15,
-      19,
-      7,
-      0,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
+  drawCharacter(
+    player.x,
+    player.y,
+    player.r,
+    "#39ff88"
+  );
 
 
-    /* CUERPO */
-
-    ctx.fillStyle = "#ff4040";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      enemy.x,
-      enemy.y,
-      enemy.r,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /* CAMISETA */
-
-    ctx.fillStyle = "#222";
-
-    ctx.fillRect(
-      enemy.x - 10,
-      enemy.y - 5,
-      20,
-      15
-    );
-
-
-    /* CABEZA */
-
-    ctx.fillStyle = "#d99a6c";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      enemy.x,
-      enemy.y - 15,
-      9,
-      0,
-      Math.PI * 2
-    );
-
-    ctx.fill();
-
-  });
-
-}
-
-
-/* =========================
-   BALÓN
-========================= */
-
-function drawBall() {
-
-  ctx.fillStyle = "white";
+  ctx.fillStyle="white";
 
   ctx.beginPath();
 
@@ -754,48 +804,21 @@ function drawBall() {
     ball.y,
     ball.r,
     0,
-    Math.PI * 2
+    Math.PI*2
   );
 
   ctx.fill();
 
-
-  ctx.strokeStyle = "#222";
-
-  ctx.lineWidth = 2;
-
-  ctx.stroke();
-
 }
 
 
 /* =========================
-   DIBUJAR TODO
-========================= */
-
-function draw() {
-
-  drawField();
-
-  drawEnemies();
-
-  drawPlayer();
-
-  drawBall();
-
-}
-
-
-/* =========================
-   BUCLE DEL JUEGO
+   LOOP
 ========================= */
 
 function loop() {
 
-  if (!running) {
-    return;
-  }
-
+  if(!running) return;
 
   updatePlayer();
 
@@ -804,7 +827,6 @@ function loop() {
   updateBall();
 
   draw();
-
 
   requestAnimationFrame(loop);
 
@@ -815,92 +837,65 @@ function loop() {
    JOYSTICK
 ========================= */
 
-function moveJoystick(clientX, clientY) {
+const joystick = $("joystick");
+const stick = $("stick");
+
+function moveJoystick(x,y) {
 
   const rect =
     joystick.getBoundingClientRect();
 
+  const cx =
+    rect.left+rect.width/2;
 
-  const centerX =
-    rect.left + rect.width / 2;
+  const cy =
+    rect.top+rect.height/2;
 
+  let dx=x-cx;
+  let dy=y-cy;
 
-  const centerY =
-    rect.top + rect.height / 2;
+  const max=45;
 
+  const d=Math.hypot(dx,dy);
 
-  let dx =
-    clientX - centerX;
+  if(d>max) {
 
-
-  let dy =
-    clientY - centerY;
-
-
-  const max = 45;
-
-
-  const d =
-    Math.hypot(dx, dy);
-
-
-  if (d > max) {
-
-    dx =
-      dx / d * max;
-
-    dy =
-      dy / d * max;
+    dx=dx/d*max;
+    dy=dy/d*max;
 
   }
 
-
   stick.style.transform =
-    `translate(${dx}px, ${dy}px)`;
+    `translate(${dx}px,${dy}px)`;
 
-
-  joyX =
-    dx / max;
-
-  joyY =
-    dy / max;
+  joyX=dx/max;
+  joyY=dy/max;
 
 }
 
-
-/* =========================
-   JOYSTICK RESET
-========================= */
 
 function resetJoystick() {
 
-  stick.style.transform =
+  stick.style.transform=
     "translate(0,0)";
 
-  joyX = 0;
-
-  joyY = 0;
+  joyX=0;
+  joyY=0;
 
 }
 
 
-/* =========================
-   JOYSTICK TOUCH
-========================= */
-
 joystick.addEventListener(
   "pointerdown",
-  function(event) {
-
-    event.preventDefault();
+  e => {
 
     joystick.setPointerCapture(
-      event.pointerId
+      e.pointerId
     );
 
     moveJoystick(
-      event.clientX,
-      event.clientY
+      e.clientX,
+      e.clientY
     );
 
   }
@@ -909,20 +904,13 @@ joystick.addEventListener(
 
 joystick.addEventListener(
   "pointermove",
-  function(event) {
+  e => {
 
-    if (
-      event.buttons === 0
-    ) {
-      return;
-    }
-
-    event.preventDefault();
-
-    moveJoystick(
-      event.clientX,
-      event.clientY
-    );
+    if(e.buttons)
+      moveJoystick(
+        e.clientX,
+        e.clientY
+      );
 
   }
 );
@@ -930,103 +918,45 @@ joystick.addEventListener(
 
 joystick.addEventListener(
   "pointerup",
-  function() {
-
-    resetJoystick();
-
-  }
+  resetJoystick
 );
 
 
 joystick.addEventListener(
   "pointercancel",
-  function() {
-
-    resetJoystick();
-
-  }
+  resetJoystick
 );
 
 
 /* =========================
-   TIRAR
+   TIRO
 ========================= */
 
 function shoot() {
 
-  if (
-    distance(player, ball) > 70
-  ) {
-    return;
-  }
+  if(
+    distance(player,ball)>70
+  ) return;
 
+  let dx=joyX;
+  let dy=joyY;
 
-  let dx = joyX;
-  let dy = joyY;
+  if(
+    Math.abs(dx)<.1 &&
+    Math.abs(dy)<.1
+  ) dx=1;
 
-
-  if (
-    Math.abs(dx) < 0.1 &&
-    Math.abs(dy) < 0.1
-  ) {
-
-    dx = 1;
-    dy = 0;
-
-  }
-
-
-  ball.vx = dx * 12;
-
-  ball.vy = dy * 12;
+  ball.vx=dx*12;
+  ball.vy=dy*12;
 
 }
 
 
-/* =========================
-   PASAR
-========================= */
-
-function pass() {
-
-  if (
-    distance(player, ball) > 70
-  ) {
-    return;
-  }
-
-
-  let dx = joyX;
-  let dy = joyY;
-
-
-  if (
-    Math.abs(dx) < 0.1 &&
-    Math.abs(dy) < 0.1
-  ) {
-
-    dx = 1;
-    dy = 0;
-
-  }
-
-
-  ball.vx = dx * 7;
-
-  ball.vy = dy * 7;
-
-}
-
-
-/* =========================
-   BOTÓN TIRAR
-========================= */
-
-shootBtn.addEventListener(
+$("shoot").addEventListener(
   "pointerdown",
-  function(event) {
+  e => {
 
-    event.preventDefault();
+    e.preventDefault();
 
     shoot();
 
@@ -1035,14 +965,34 @@ shootBtn.addEventListener(
 
 
 /* =========================
-   BOTÓN PASE
+   PASE
 ========================= */
 
-passBtn.addEventListener(
-  "pointerdown",
-  function(event) {
+function pass() {
 
-    event.preventDefault();
+  if(
+    distance(player,ball)>70
+  ) return;
+
+  let dx=joyX;
+  let dy=joyY;
+
+  if(
+    Math.abs(dx)<.1 &&
+    Math.abs(dy)<.1
+  ) dx=1;
+
+  ball.vx=dx*7;
+  ball.vy=dy*7;
+
+}
+
+
+$("pass").addEventListener(
+  "pointerdown",
+  e => {
+
+    e.preventDefault();
 
     pass();
 
@@ -1054,43 +1004,37 @@ passBtn.addEventListener(
    SPRINT
 ========================= */
 
-sprintBtn.addEventListener(
+$("sprint").addEventListener(
   "pointerdown",
-  function(event) {
-
-    event.preventDefault();
-
-    sprinting = true;
-
-  }
+  () => sprinting=true
 );
 
-
-sprintBtn.addEventListener(
+$("sprint").addEventListener(
   "pointerup",
-  function() {
-
-    sprinting = false;
-
-  }
+  () => sprinting=false
 );
 
-
-sprintBtn.addEventListener(
+$("sprint").addEventListener(
   "pointercancel",
-  function() {
-
-    sprinting = false;
-
-  }
+  () => sprinting=false
 );
 
 
-sprintBtn.addEventListener(
-  "pointerleave",
-  function() {
+/* =========================
+   VOLVER
+========================= */
 
-    sprinting = false;
+$("back").addEventListener(
+  "click",
+  () => {
+
+    running=false;
+
+    game.classList.add("hidden");
+
+    menu.classList.remove("hidden");
+
+    resetJoystick();
 
   }
 );
@@ -1100,55 +1044,37 @@ sprintBtn.addEventListener(
    TEMPORIZADOR
 ========================= */
 
-setInterval(
-  function() {
+setInterval(() => {
 
-    if (!running) {
-      return;
-    }
+  if(!running) return;
 
+  timeLeft--;
 
-    timeLeft--;
+  const min =
+    Math.floor(timeLeft/60);
 
+  const sec =
+    timeLeft%60;
 
-    const minutes =
-      Math.floor(timeLeft / 60);
-
-
-    const seconds =
-      timeLeft % 60;
+  $("timer").textContent =
+    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
 
 
-    timerText.textContent =
-      `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  if(timeLeft<=0) {
 
+    running=false;
 
-    if (timeLeft <= 0) {
+    alert(
+      `🏁 FINAL\n\n${home} - ${away}`
+    );
 
-      running = false;
+    game.classList.add("hidden");
 
+    menu.classList.remove("hidden");
 
-      setTimeout(
-        function() {
+  }
 
-          alert(
-            `FINAL\n\n${home} - ${away}`
-          );
-
-
-          game.classList.add("hidden");
-
-          menu.classList.remove("hidden");
-
-        },
-        100
-      );
-
-    }
-
-  },
-  1000
-);
+},1000);
 
 
 /* =========================
