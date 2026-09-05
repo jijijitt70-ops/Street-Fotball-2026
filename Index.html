@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Street Football 26</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="menu">
+    <div class="logo">STREET <span>FOOTBALL</span></div>
+    <div class="edition">26</div>
+
+    <button id="playBtn">⚽ JUGAR</button>
+    <button class="menuBtn">🏆 TORNEO</button>
+    <button class="menuBtn">👤 MI JUGADOR</button>
+
+    <p class="copyright">STREET FOOTBALL 26 · FAN PROJECT ORIGINAL</p>
+  </div>
+
+  <div id="game" class="hidden">
+
+    <div id="score">
+      <div>
+        <small>LOCAL</small>
+        <b id="homeScore">0</b>
+      </div>
+
+      <div id="timer">03:00</div>
+
+      <div>
+        <small>VISITANTE</small>
+        <b id="awayScore">0</b>
+      </div>
+    </div>
+
+    <canvas id="field"></canvas>
+
+    <div id="joystick">
+      <div id="stick"></div>
+    </div>
+
+    <div id="buttons">
+      <button id="pass">PASE</button>
+      <button id="shoot">TIRAR</button>
+      <button id="sprint">⚡</button>
+    </div>
+
+    <button id="back">✕</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
