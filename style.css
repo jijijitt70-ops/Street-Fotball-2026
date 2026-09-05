@@ -6,7 +6,10 @@
   user-select: none;
 }
 
+html,
 body {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   font-family: Arial, sans-serif;
   background: #050505;
@@ -14,105 +17,189 @@ body {
 }
 
 button {
-  border: 0;
-  cursor: pointer;
+  border: none;
+  outline: none;
   color: white;
   font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
+
+/* =========================
+   MENÚ
+========================= */
+
 #menu {
+  width: 100%;
   height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   background:
-    radial-gradient(circle at 50% 30%, #173d25, transparent 40%),
-    linear-gradient(135deg, #050505, #101010);
+    radial-gradient(
+      circle at 50% 30%,
+      #173d25,
+      transparent 40%
+    ),
+    linear-gradient(
+      135deg,
+      #050505,
+      #101010
+    );
 }
 
 .logo {
-  font-size: clamp(35px, 10vw, 75px);
+  font-size: clamp(40px, 11vw, 80px);
   font-weight: 1000;
   font-style: italic;
-  letter-spacing: -3px;
+  letter-spacing: -4px;
+  line-height: .85;
+  text-align: center;
 }
 
 .logo span {
+  display: block;
   color: #39ff88;
 }
 
 .edition {
-  font-size: 90px;
-  line-height: .8;
+  font-size: 95px;
+  line-height: .9;
   font-weight: 1000;
-  color: #39ff88;
   font-style: italic;
-  margin-bottom: 50px;
+  color: #39ff88;
+
+  margin-bottom: 45px;
 }
 
-#playBtn {
-  width: 260px;
-  padding: 18px;
-  border-radius: 14px;
+
+/* BOTÓN JUGAR */
+
+.mainButton {
+  width: 270px;
+  height: 62px;
+
+  border-radius: 15px;
+
   background: #39ff88;
   color: #06120a;
+
   font-size: 21px;
-  box-shadow: 0 0 35px rgba(57,255,136,.35);
-  margin-bottom: 15px;
+
+  box-shadow:
+    0 0 35px rgba(57,255,136,.35);
+
+  margin-bottom: 12px;
 }
 
-.menuBtn {
-  width: 260px;
-  padding: 14px;
-  margin: 5px;
-  border-radius: 12px;
+
+/* OTROS BOTONES */
+
+.menuButton {
+  width: 270px;
+  height: 52px;
+
+  border-radius: 14px;
+
   background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  font-size: 15px;
+
+  margin: 5px;
 }
+
+.mainButton:active,
+.menuButton:active {
+  transform: scale(.96);
+}
+
+
+/* COPYRIGHT */
 
 .copyright {
   position: absolute;
   bottom: 20px;
-  font-size: 10px;
+
   color: #777;
+
+  font-size: 10px;
 }
+
+
+/* =========================
+   UTILIDAD
+========================= */
 
 .hidden {
   display: none !important;
 }
 
+
+/* =========================
+   JUEGO
+========================= */
+
 #game {
   position: fixed;
   inset: 0;
+
   background: #08752e;
 }
 
+
+/* CANVAS */
+
 #field {
   position: absolute;
-  inset: 0;
+
+  left: 0;
+  top: 0;
+
   width: 100%;
   height: 100%;
+
+  display: block;
 }
+
+
+/* =========================
+   MARCADOR
+========================= */
 
 #score {
   position: absolute;
+
   top: 12px;
   left: 50%;
+
   transform: translateX(-50%);
-  z-index: 5;
-  min-width: 240px;
+
+  z-index: 20;
+
+  min-width: 250px;
+
   padding: 8px 18px;
+
   border-radius: 15px;
-  background: rgba(0,0,0,.75);
+
+  background: rgba(0,0,0,.78);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   text-align: center;
+
   backdrop-filter: blur(10px);
 }
 
-#score div {
+.team {
   display: flex;
   flex-direction: column;
 }
@@ -131,50 +218,88 @@ button {
   font-weight: bold;
 }
 
+
+/* =========================
+   JOYSTICK
+========================= */
+
 #joystick {
   position: absolute;
+
   left: 25px;
   bottom: 25px;
+
   width: 125px;
   height: 125px;
+
   border-radius: 50%;
-  background: rgba(0,0,0,.25);
+
+  background: rgba(0,0,0,.28);
+
   border: 2px solid rgba(255,255,255,.2);
+
+  z-index: 30;
+
   touch-action: none;
 }
 
 #stick {
   position: absolute;
+
   width: 60px;
   height: 60px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.7);
+
   left: 30px;
   top: 30px;
-  box-shadow: 0 5px 20px rgba(0,0,0,.3);
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.75);
+
+  box-shadow:
+    0 5px 20px rgba(0,0,0,.3);
+
+  pointer-events: none;
 }
+
+
+/* =========================
+   BOTONES DEL JUEGO
+========================= */
 
 #buttons {
   position: absolute;
+
   right: 25px;
   bottom: 25px;
+
   display: flex;
   align-items: flex-end;
+
   gap: 12px;
+
+  z-index: 30;
 }
 
 #buttons button {
   width: 70px;
   height: 70px;
+
   border-radius: 50%;
-  background: rgba(0,0,0,.6);
+
+  background: rgba(0,0,0,.65);
+
   border: 2px solid rgba(255,255,255,.25);
+
+  touch-action: manipulation;
 }
 
 #shoot {
   width: 90px !important;
   height: 90px !important;
+
   background: #39ff88 !important;
+
   color: #06200e !important;
 }
 
@@ -183,18 +308,34 @@ button {
   height: 55px !important;
 }
 
+
+/* =========================
+   VOLVER
+========================= */
+
 #back {
   position: absolute;
+
   top: 15px;
   right: 15px;
-  width: 38px;
-  height: 38px;
+
+  width: 40px;
+  height: 40px;
+
   border-radius: 50%;
-  background: rgba(0,0,0,.6);
-  z-index: 10;
+
+  background: rgba(0,0,0,.65);
+
+  z-index: 40;
 }
 
+
+/* =========================
+   PC / PANTALLAS GRANDES
+========================= */
+
 @media (min-width: 800px) {
+
   #joystick {
     left: 50px;
     bottom: 40px;
@@ -204,4 +345,5 @@ button {
     right: 50px;
     bottom: 40px;
   }
+
 }
