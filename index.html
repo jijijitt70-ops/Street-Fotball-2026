@@ -2,76 +2,289 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Street Football 26</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Street Football 26 — 2.0V</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- MENÚ PRINCIPAL -->
-  <div id="menu">
+  <!-- ==============================
+       PANTALLA DE ACTUALIZACIÓN
+  =============================== -->
 
-    <div class="logo">
-      STREET
-      <span>FOOTBALL</span>
+  <div id="updateScreen">
+
+    <div class="updateGlow"></div>
+
+    <div class="updateContent">
+
+      <div class="updateTop">
+        ¡NUEVA ACTUALIZACIÓN!
+      </div>
+
+      <div class="version">
+        2.0V
+      </div>
+
+      <div class="updateSubtitle">
+        STREET FOOTBALL 26
+      </div>
+
+      <div class="updateFeatures">
+
+        <div>⚽ Multijugador</div>
+        <div>👤 Tu propio jugador</div>
+        <div>💰 Sistema de tokens</div>
+        <div>🏆 Torneos</div>
+        <div>🥊 Modo 1V1</div>
+        <div>👥 5V5 / 11V11</div>
+        <div>🤖 Bots mejorados</div>
+        <div>🧤 Porteros</div>
+        <div>🎮 Nueva cámara</div>
+        <div>🧍 Jugadores 3D</div>
+        <div>🛒 Tienda</div>
+        <div>📊 Clasificación</div>
+
+      </div>
+
+      <button id="continueUpdate">
+        🚀 CONTINUAR
+      </button>
+
     </div>
-
-    <div class="edition">26</div>
-
-    <button id="playBtn" class="mainButton">
-      ⚽ JUGAR
-    </button>
-
-    <button id="tournamentBtn" class="menuButton">
-      🏆 TORNEO
-    </button>
-
-    <button id="playerBtn" class="menuButton">
-      👤 MI JUGADOR
-    </button>
-
-    <p class="copyright">
-      STREET FOOTBALL 26
-    </p>
 
   </div>
 
 
-  <!-- JUEGO -->
+  <!-- ==============================
+       PANTALLA DE LOGIN
+  =============================== -->
+
+  <div id="loginScreen" class="hidden">
+
+    <div class="loginBox">
+
+      <div class="loginLogo">
+        STREET<br>
+        <span>FOOTBALL</span>
+      </div>
+
+      <div class="loginVersion">
+        26 • 2.0V
+      </div>
+
+      <h2>CREA TU JUGADOR</h2>
+
+      <p>
+        Elige tu nombre para comenzar
+      </p>
+
+      <input
+        id="playerName"
+        type="text"
+        maxlength="16"
+        placeholder="Nombre de jugador"
+        autocomplete="off"
+      >
+
+      <button id="loginBtn">
+        ⚽ ENTRAR
+      </button>
+
+      <div id="loginError"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==============================
+       MENÚ PRINCIPAL
+  =============================== -->
+
+  <div id="menu" class="hidden">
+
+    <div class="menuBackground"></div>
+
+    <header class="topBar">
+
+      <div class="miniLogo">
+        STREET <span>FOOTBALL</span>
+      </div>
+
+      <div class="playerInfo">
+
+        <div class="avatar">
+          👤
+        </div>
+
+        <div>
+          <strong id="menuPlayerName">
+            JUGADOR
+          </strong>
+
+          <small>
+            NIVEL <span id="playerLevel">1</span>
+          </small>
+        </div>
+
+      </div>
+
+      <div class="tokens">
+        🪙 <span id="tokenAmount">1.000</span>
+      </div>
+
+    </header>
+
+
+    <main class="mainMenu">
+
+      <div class="gameLogo">
+
+        <div>STREET</div>
+
+        <span>FOOTBALL</span>
+
+        <strong>26</strong>
+
+      </div>
+
+
+      <button id="playBtn" class="mainButton">
+        ⚽ JUGAR
+      </button>
+
+
+      <div class="menuGrid">
+
+        <button id="oneVsOneBtn">
+          🥊
+          <span>1 VS 1</span>
+        </button>
+
+        <button id="fiveVsFiveBtn">
+          👥
+          <span>5 VS 5</span>
+        </button>
+
+        <button id="elevenBtn">
+          🏟️
+          <span>11 VS 11</span>
+        </button>
+
+        <button id="tournamentBtn">
+          🏆
+          <span>TORNEOS</span>
+        </button>
+
+        <button id="playerBtn">
+          👤
+          <span>MI JUGADOR</span>
+        </button>
+
+        <button id="shopBtn">
+          🛒
+          <span>TIENDA</span>
+        </button>
+
+      </div>
+
+
+      <button id="rankingBtn" class="wideButton">
+        📊 CLASIFICACIÓN
+      </button>
+
+
+      <div class="menuFooter">
+        STREET FOOTBALL 26 • 2.0V
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- ==============================
+       MODAL
+  =============================== -->
+
+  <div id="modal" class="hidden">
+
+    <div class="modalBox">
+
+      <button id="closeModal">
+        ✕
+      </button>
+
+      <h2 id="modalTitle">
+        STREET FOOTBALL
+      </h2>
+
+      <div id="modalContent"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==============================
+       JUEGO
+  =============================== -->
+
   <div id="game" class="hidden">
 
-    <!-- MARCADOR -->
     <div id="score">
 
       <div class="team">
-        <small>LOCAL</small>
-        <b id="homeScore">0</b>
+
+        <small>
+          TU EQUIPO
+        </small>
+
+        <b id="homeScore">
+          0
+        </b>
+
       </div>
+
 
       <div id="timer">
         03:00
       </div>
 
+
       <div class="team">
-        <small>VISITANTE</small>
-        <b id="awayScore">0</b>
+
+        <small>
+          RIVALES
+        </small>
+
+        <b id="awayScore">
+          0
+        </b>
+
       </div>
 
     </div>
 
 
-    <!-- CAMPO -->
     <canvas id="field"></canvas>
 
 
     <!-- JOYSTICK -->
+
     <div id="joystick">
+
       <div id="stick"></div>
+
     </div>
 
 
-    <!-- BOTONES -->
+    <!-- CONTROLES -->
+
     <div id="buttons">
 
       <button id="pass">
@@ -89,7 +302,6 @@
     </div>
 
 
-    <!-- VOLVER -->
     <button id="back">
       ✕
     </button>
